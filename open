@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+#
+# bash completion file for the open built-in on OS X
+#
+
+if [[ $(uname) == Darwin ]]; then
+  # shellcheck disable=SC2155
+  _open() {
+    COMPREPLY=()
+    local cur
+    _get_comp_words_by_ref -n : cur
+
+    local optcur="${COMP_WORDS[(( COMP_CWORD - 1 ))]} ${COMP_WORDS[COMP_CWORD]}"
+
+    # Generate list of applications to autocomplete only when we match -a
+    case "$optcur" in
+      -a*)
+        local applications="$( \
+          find "$HOME/Applications" /Applications{/Utilities,} -maxdepth 2 2>/dev/null \
+          | perl -ne 'if(/\/([^\/]+)\.app$/i) { print "$1\n" }')"
+
+        IFS=$'\n' COMPREPLY=( $( compgen -W "$applications" -- "$cur" ) )
+        return
+        ;;
+    esac
+
+    case "$cur" in
+      --*)
+        local dashdash_options="$( \
+          open -h 2>&1 \
+          | perl -ne 'if(/(--[a-zA-Z\-]+)/) { print "$1\n" }')"
+        COMPREPLY=( $( compgen -W "$dashdash_options" -- "$cur" ) )
+        ;;
+      -*)
+        local dash_options="$( \
+          open -h 2>&1 \
+          | perl -ne 'if(/^\s+(-[a-zA-Z])/) { print "$1\n" }')"
+        COMPREPLY=( $( compgen -W "$dash_options" -- "$cur" ) )
+        ;;
+      *)
+        COMPREPLY=( $( compgen -o default -- "$cur" ) )
+        ;;
+    esac
+
+    return
+  }
+
+  complete -o filenames -F _open open
+fi
