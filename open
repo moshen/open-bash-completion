@@ -19,7 +19,9 @@ if [[ $(uname) == Darwin ]]; then
           find "$HOME/Applications" /Applications{/Utilities,} -maxdepth 2 -iname '*.app' 2>/dev/null \
           | perl -ne 'if(/\/([^\/]+)\.app$/i) { print "$1\n" }')"
 
+        local OLDIFS=$IFS
         IFS=$'\n' COMPREPLY=( $( compgen -W "$applications" -- "$cur" ) )
+        IFS=$OLDIFS
         return
         ;;
     esac
