@@ -40,7 +40,9 @@ if [[ $(uname) == Darwin ]]; then
         COMPREPLY=( $( compgen -W "$dash_options" -- "$cur" ) )
         ;;
       *)
+        local OLDIFS=$IFS
         COMPREPLY=( $( compgen -o default -- "$cur" ) )
+        IFS=$OLDIFS
         ;;
     esac
 
