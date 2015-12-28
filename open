@@ -41,7 +41,7 @@ if [[ $(uname) == Darwin ]]; then
         ;;
       *)
         local OLDIFS=$IFS
-        COMPREPLY=( $( compgen -o default -- "$cur" ) )
+        IFS=$'\n' COMPREPLY=( $( compgen -o default -- "$cur" ) )
         IFS=$OLDIFS
         ;;
     esac
