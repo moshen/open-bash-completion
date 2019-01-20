@@ -5,6 +5,16 @@ application names (in `$HOME/Applications` and `/Applications`).
 
 ## Installation
 
+### With Homebrew
+
+Install Homebrew per https://brew.sh/
+
+```
+brew install open-completion
+```
+
+### Without Homebrew
+
 Copy `open` into your `bash_completion.d` folder.
 
 ## Usage
