@@ -4,7 +4,6 @@
 #
 
 if [[ $(uname) == Darwin ]]; then
-  # shellcheck disable=SC2155
   _open() {
     COMPREPLY=()
     local cur
@@ -15,12 +14,13 @@ if [[ $(uname) == Darwin ]]; then
     # Generate list of applications to autocomplete only when we match -a
     case "$optcur" in
       -a*)
-        local applications="$( \
+        local applications
+        applications="$( \
           find "$HOME/Applications" /Applications{/Utilities,} -maxdepth 2 -iname '*.app' 2>/dev/null \
           | perl -ne 'if(/\/([^\/]+)\.app$/i) { print "$1\n" }')"
 
         local OLDIFS="$IFS"
-        IFS=$'\n' COMPREPLY=( $( compgen -W "$applications" -- "$cur" ) )
+        while IFS=$'\n' read -r line; do COMPREPLY+=("$line"); done < <(IFS=$'\n' compgen -W "$applications" -- "$cur")
         IFS="$OLDIFS"
         return
         ;;
@@ -28,20 +28,26 @@ if [[ $(uname) == Darwin ]]; then
 
     case "$cur" in
       --*)
-        local dashdash_options="$( \
+        local dashdash_options
+        dashdash_options="$( \
           open -h 2>&1 \
           | perl -ne 'if(/(--[a-zA-Z\-]+)/) { print "$1\n" }')"
-        COMPREPLY=( $( compgen -W "$dashdash_options" -- "$cur" ) )
+        local OLDIFS="$IFS"
+        while IFS=$'\n' read -r line; do COMPREPLY+=("$line"); done < <(IFS=$'\n' compgen -W "$dashdash_options" -- "$cur")
+        IFS="$OLDIFS"
         ;;
       -*)
-        local dash_options="$( \
+        local dash_options
+        dash_options="$( \
           open -h 2>&1 \
           | perl -ne 'if(/^\s+(-[a-zA-Z])/) { print "$1\n" }')"
-        COMPREPLY=( $( compgen -W "$dash_options" -- "$cur" ) )
+        local OLDIFS="$IFS"
+        while IFS=$'\n' read -r line; do COMPREPLY+=("$line"); done < <(IFS=$'\n' compgen -W "$dash_options" -- "$cur")
+        IFS="$OLDIFS"
         ;;
       *)
         local OLDIFS="$IFS"
-        IFS=$'\n' COMPREPLY=( $( compgen -o default -- "$cur" ) )
+        while IFS=$'\n' read -r line; do COMPREPLY+=("$line"); done < <(IFS=$'\n' compgen -o default -- "$cur")
         IFS="$OLDIFS"
         ;;
     esac
