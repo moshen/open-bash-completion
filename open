@@ -16,7 +16,7 @@ if [[ $(uname) == Darwin ]]; then
       -a*)
         local applications
         applications="$( \
-          find "$HOME/Applications" /Applications{/Utilities,} -maxdepth 2 -iname '*.app' 2>/dev/null \
+          find "$HOME/Applications" {/System,}/Applications{/Utilities,} -maxdepth 2 -iname '*.app' 2>/dev/null \
           | perl -ne 'if(/\/([^\/]+)\.app$/i) { print "$1\n" }')"
 
         local OLDIFS="$IFS"
